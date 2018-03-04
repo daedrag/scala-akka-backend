@@ -7,8 +7,8 @@ class Test extends FunSuite {
   }
 
   test("multi2 can use pureconfig dependency") {
-    import pureconfig._
+    // import pureconfig._
 
-    implicit def hint[T]: ProductHint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, KebabCase))
+    // implicit def hint[T]: ProductHint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, KebabCase))
   }
 }
