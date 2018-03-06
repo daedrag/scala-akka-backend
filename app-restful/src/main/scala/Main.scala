@@ -3,6 +3,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import com.typesafe.config.ConfigFactory
 import spray.json.{DefaultJsonProtocol, PrettyPrinter}
 
 import scala.io.StdIn
@@ -17,24 +18,25 @@ trait PrettyPrinterSupport {
 }
 
 object Main extends App with JsonSupport with PrettyPrinterSupport {
-  implicit val system       = ActorSystem("my-system")
+  implicit val system       = ActorSystem("ClusterSystem", ConfigFactory.load())
   implicit val materializer = ActorMaterializer()
   // needed for the future flatMap/onComplete in the end
   implicit val executionContext = system.dispatcher
 
-  val route =
+  val route = concat(
     path("hello") {
       get {
         val greeting = Greeting("User")
         complete(greeting)
       }
-    } ~
-    path("hello" / String) { name => {
+    },
+    path("hello" / Remaining) { name =>
       get {
         val greeting = Greeting("User")
         complete(greeting)
       }
-    } }
+    }
+  )
 
   val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
 

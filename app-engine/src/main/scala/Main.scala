@@ -1,11 +1,28 @@
-object Main extends App {
-  println("multi2 can use common sub-project")
+import com.typesafe.config.ConfigFactory
+import akka.actor.ActorSystem
+import akka.actor.Props
 
-  val entity = Entity("id", NestedEntity("value"))
+object Main {
+  def main(args: Array[String]): Unit = {
+    if (args.isEmpty)
+      startup("0")
+    else
+      startup(args(0))
+  }
 
-  println("multi2 can use pureconfig dependency")
+  def startup(port: String): Unit = {
+    // Override the configuration of the port
+    val config = ConfigFactory.parseString(s"""
+      akka.remote.netty.tcp.port=$port
+      akka.remote.artery.canonical.port=$port
+      """).withFallback(ConfigFactory.load())
 
-  // import pureconfig._
+    // Create an Akka system
+    val system = ActorSystem("ClusterSystem", config)
+    println(s"Cluster started at ${port}!")
 
-  // implicit def hint[T]: ProductHint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, KebabCase))
+    // Create an actor that handles cluster domain events
+    // system.actorOf(Props[SimpleClusterListener], name = "clusterListener")
+  }
+
 }

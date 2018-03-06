@@ -35,6 +35,7 @@ lazy val restful = project
     assemblySettings,
     libraryDependencies ++= commonDependencies ++ Seq(
       dependencies.akkaHttp,
+      dependencies.akkaStream,
       dependencies.sprayJson
       // dependencies.monocleCore,
       // dependencies.monocleMacro
@@ -67,10 +68,13 @@ lazy val dependencies =
     val akkaHttpV       = "10.1.0-RC2"
     val scalatestV      = "3.0.4"
 
-    val akka           = "com.typesafe.akka"          %% "akka-stream"             % akkaV
-    val akkaHttp       = "com.typesafe.akka"          %% "akka-http"               % akkaHttpV
-    val sprayJson      = "com.typesafe.akka"          %% "akka-http-spray-json"    % akkaHttpV
-    val scalatest      = "org.scalatest"              %% "scalatest"               % scalatestV
+    val akkaActor       = "com.typesafe.akka"          %% "akka-actor"              % akkaV
+    val akkaRemote      = "com.typesafe.akka"          %% "akka-remote"             % akkaV
+    val akkaCluster     = "com.typesafe.akka"          %% "akka-cluster"            % akkaV
+    val akkaStream      = "com.typesafe.akka"          %% "akka-stream"             % akkaV
+    val akkaHttp        = "com.typesafe.akka"          %% "akka-http"               % akkaHttpV
+    val sprayJson       = "com.typesafe.akka"          %% "akka-http-spray-json"    % akkaHttpV
+    val scalatest       = "org.scalatest"              %% "scalatest"               % scalatestV
 
     // val logbackV        = "1.2.3"
     // val logstashV       = "4.11"
@@ -93,7 +97,9 @@ lazy val dependencies =
   }
 
 lazy val commonDependencies = Seq(
-  dependencies.akka,
+  dependencies.akkaActor,
+  dependencies.akkaRemote,
+  dependencies.akkaCluster,
   dependencies.scalatest  % "test",
 
   // dependencies.logback,
