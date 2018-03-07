@@ -1,6 +1,8 @@
-import com.typesafe.config.ConfigFactory
+package com.example.engine.app
+
 import akka.actor.ActorSystem
-import akka.actor.Props
+import com.example.engine.actor.FactorialActor
+import com.typesafe.config.ConfigFactory
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -18,11 +20,11 @@ object Main {
       """).withFallback(ConfigFactory.load())
 
     // Create an Akka system
-    val system = ActorSystem("ClusterSystem", config)
+    val system = ActorSystem("my-cluster", config)
     println(s"Cluster started at ${port}!")
 
-    // Create an actor that handles cluster domain events
-    // system.actorOf(Props[SimpleClusterListener], name = "clusterListener")
+    // Create an actor that listen to factorial message
+    system.actorOf(FactorialActor.props, name = "factorial-actor")
   }
 
 }

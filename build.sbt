@@ -23,7 +23,9 @@ lazy val common = project
   .settings(
     name := "common",
     settings,
-    libraryDependencies ++= commonDependencies
+    libraryDependencies ++= Seq(
+//      dependencies.akkaActor
+    )
   )
 
 lazy val restful = project
@@ -71,6 +73,7 @@ lazy val dependencies =
     val akkaActor       = "com.typesafe.akka"          %% "akka-actor"              % akkaV
     val akkaRemote      = "com.typesafe.akka"          %% "akka-remote"             % akkaV
     val akkaCluster     = "com.typesafe.akka"          %% "akka-cluster"            % akkaV
+    val akkaClusterTool = "com.typesafe.akka"          %% "akka-cluster-tools"      % akkaV
     val akkaStream      = "com.typesafe.akka"          %% "akka-stream"             % akkaV
     val akkaHttp        = "com.typesafe.akka"          %% "akka-http"               % akkaHttpV
     val sprayJson       = "com.typesafe.akka"          %% "akka-http-spray-json"    % akkaHttpV
@@ -100,6 +103,7 @@ lazy val commonDependencies = Seq(
   dependencies.akkaActor,
   dependencies.akkaRemote,
   dependencies.akkaCluster,
+  dependencies.akkaClusterTool,
   dependencies.scalatest  % "test",
 
   // dependencies.logback,

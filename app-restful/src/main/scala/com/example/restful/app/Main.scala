@@ -1,4 +1,4 @@
-package com.example.app.restful
+package com.example.restful.app
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -6,7 +6,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
-import com.example.app.actor.FactorialActor
+import com.example.restful.actor.FactorialActor
 import com.example.model.{Factorial, FactorialResult, Greeting}
 import com.typesafe.config.ConfigFactory
 import spray.json.{DefaultJsonProtocol, PrettyPrinter}
@@ -17,8 +17,8 @@ import scala.io.StdIn
 // collect your json format instances into a support trait:
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val greetingFormat = jsonFormat1(Greeting)
-  implicit val factorialFormat = jsonFormat1(Factorial)
-  implicit val factorialResultFormat = jsonFormat2(FactorialResult)
+  implicit val factorialFormat = jsonFormat2(Factorial)
+  implicit val factorialResultFormat = jsonFormat3(FactorialResult)
 }
 
 trait PrettyPrinterSupport {
@@ -26,7 +26,8 @@ trait PrettyPrinterSupport {
 }
 
 object Main extends App with JsonSupport with PrettyPrinterSupport {
-  implicit val system       = ActorSystem("ClusterSystem", ConfigFactory.load())
+
+  implicit val system       = ActorSystem("my-cluster", ConfigFactory.load())
   implicit val materializer = ActorMaterializer()
   // needed for the future flatMap/onComplete in the end
   implicit val executionContext = system.dispatcher
