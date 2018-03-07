@@ -1,1 +1,0 @@
-case class Greeting(name: String)

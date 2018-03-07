@@ -1,16 +1,24 @@
+package com.example.app.restful
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import akka.util.Timeout
+import com.example.app.actor.FactorialActor
+import com.example.model.{Factorial, FactorialResult, Greeting}
 import com.typesafe.config.ConfigFactory
 import spray.json.{DefaultJsonProtocol, PrettyPrinter}
 
+import scala.concurrent.duration._
 import scala.io.StdIn
 
 // collect your json format instances into a support trait:
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val greetingFormat = jsonFormat1(Greeting)
+  implicit val factorialFormat = jsonFormat1(Factorial)
+  implicit val factorialResultFormat = jsonFormat2(FactorialResult)
 }
 
 trait PrettyPrinterSupport {
@@ -23,6 +31,10 @@ object Main extends App with JsonSupport with PrettyPrinterSupport {
   // needed for the future flatMap/onComplete in the end
   implicit val executionContext = system.dispatcher
 
+  import akka.pattern.ask
+
+  val factorialActor = system.actorOf(FactorialActor.props, "factorial-actor")
+
   val route = concat(
     path("hello") {
       get {
@@ -32,8 +44,17 @@ object Main extends App with JsonSupport with PrettyPrinterSupport {
     },
     path("hello" / Remaining) { name =>
       get {
-        val greeting = Greeting("User")
+        val greeting = Greeting(name)
         complete(greeting)
+      }
+    },
+    path("factorial" / IntNumber) { n =>
+      get {
+        implicit val askTimeout: Timeout = 3.seconds // and a timeout
+
+        onSuccess((factorialActor ? Factorial(n)).mapTo[FactorialResult]) { result =>
+          complete(result)
+        }
       }
     }
   )
